@@ -1,0 +1,24 @@
+[project]
+name = "yet-another-fastapi-template"
+version = "0.1.0"
+description = """A modern, opinionated FastAPI template for building Python web applications with best practices and a well-structured codebase.
+                 It leverages a cutting-edge stack for optimal performance, maintainability, and developer productivity, 
+                 making it an ideal starting point for your next project."""
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.112.2",
+    "sqlalchemy>=2.0.32",
+    "asyncpg>=0.29.0",
+    "alembic>=1.13.2",
+    "python-dotenv>=1.0.1",
+    "pydantic-settings>=2.4.0",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "ruff>=0.6.3",
+    "pytest>=8.3.2",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=5.0.0",
+]
