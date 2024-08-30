@@ -7,7 +7,7 @@ description = """A modern, opinionated FastAPI template for building Python web 
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "fastapi>=0.112.2",
+    "fastapi[standard]>=0.112.2",
     "sqlalchemy>=2.0.32",
     "asyncpg>=0.29.0",
     "alembic>=1.13.2",
