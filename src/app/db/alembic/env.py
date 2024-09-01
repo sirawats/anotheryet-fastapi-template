@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 # Import your SQLAlchemy models and settings
-from app.db.models import Base  # type: ignore  # noqa: F401
+from app.db.orm import Base  # type: ignore  # noqa: F401
 from app.config import settings
 
 # this is the Alembic Config object, which provides
