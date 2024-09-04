@@ -7,22 +7,25 @@ services:
       - "8000:8000"
     volumes:
       - ./src:/app/src
-    environment:
-      - DATABASE_URL=postgresql+asyncpg://user:password@db:5432/fastapi_db
-      - SECRET_KEY=your_secret_key_here
+    env_file:
+      - path: .env
+        required: true
+    volumes:
+      - .env:/app/.env
     depends_on:
       - db
 
-  db:
+  postgres:
     image: postgres:16
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./postgres_data:/var/lib/postgresql/data
+
+    env_file:
+      - path: .env
+        required: true
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=fastapi_db
     ports:
       - "5432:5432"
-
-volumes:
-  postgres_data:

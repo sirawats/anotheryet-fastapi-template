@@ -25,7 +25,10 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 # Set the DATABASE_URL in Alembic's context
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+config.set_main_option(
+    "sqlalchemy.url",
+    f"postgresql+asyncpg://{settings.DB_USERNAME}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_DATABASE}",
+)
 
 
 def run_migrations_offline() -> None:
