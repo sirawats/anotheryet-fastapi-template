@@ -3,14 +3,11 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import declarative_base
 
-
-@pytest.fixture(scope="session")
-def Base():
-    return declarative_base()
+Base = declarative_base()
 
 
 @pytest.fixture(scope="module")
-async def async_session(Base) -> AsyncGenerator[AsyncSession, None]:
+async def async_session() -> AsyncGenerator[AsyncSession, None]:
     engine = create_async_engine("sqlite+aiosqlite:///:memory:")
 
     async with engine.begin() as conn:

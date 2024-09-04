@@ -1,13 +1,9 @@
 import asyncio
 import pytest
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import declarative_base
 from pydantic import BaseModel
 from src.app.core.base_repository import GenericAsyncRepository
-# from tests.utils import setup_database
-
-# Setup test database and models
-Base = declarative_base()
+from tests.conftest import Base
 
 
 class TestModel(Base):
