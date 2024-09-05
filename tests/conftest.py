@@ -1,3 +1,4 @@
+import asyncio
 from typing import AsyncGenerator
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
@@ -6,7 +7,8 @@ from sqlalchemy.orm import declarative_base
 Base = declarative_base()
 
 
-@pytest.fixture(scope="module")
+@pytest.mark.asyncio
+@pytest.fixture(scope="function")
 async def async_session() -> AsyncGenerator[AsyncSession, None]:
     engine = create_async_engine("sqlite+aiosqlite:///:memory:")
 
@@ -21,3 +23,10 @@ async def async_session() -> AsyncGenerator[AsyncSession, None]:
 
     # Close the database connection
     await engine.dispose()
+
+
+@pytest.fixture(scope="function")
+def event_loop():
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
