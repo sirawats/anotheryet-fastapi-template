@@ -1,4 +1,3 @@
-import asyncio
 import pytest
 from sqlalchemy import Column, Integer, String
 from pydantic import BaseModel
@@ -33,12 +32,10 @@ class TestRepository(GenericAsyncRepository[TestModel]):
 
 
 @pytest.fixture(scope="function")
-def repository(async_session, event_loop):
-    session = event_loop.run_until_complete(anext(async_session))
-    return TestRepository(TestModel, session)
+async def repository(async_session):
+    return TestRepository(TestModel, async_session)
 
 
-@pytest.mark.asyncio
 async def test_create(repository):
     # Test creating an item
     item = TestCreateSchema(name="Test Item")
@@ -47,7 +44,6 @@ async def test_create(repository):
     assert created_item.name == "Test Item"
 
 
-@pytest.mark.asyncio
 async def test_get_by_id(repository):
     # Create an item
     item = TestSchema(id=1, name="Test Item")
@@ -60,7 +56,6 @@ async def test_get_by_id(repository):
     assert retrieved_item.name == "Test Item"
 
 
-@pytest.mark.asyncio
 async def test_get_all(repository):
     items = [TestSchema(id=i, name=f"Item {i}") for i in range(5)]
     for item in items:
@@ -71,7 +66,6 @@ async def test_get_all(repository):
     assert all(isinstance(item, TestModel) for item in all_items)
 
 
-# @pytest.mark.asyncio
 # async def test_update(repository):
 #     item = TestSchema(id=1, name="Original Name")
 #     created_item = await repository.create(item)
@@ -83,7 +77,6 @@ async def test_get_all(repository):
 #     assert result.name == "Updated Name"
 
 
-# @pytest.mark.asyncio
 # async def test_delete(repository):
 #     item = TestSchema(id=1, name="To Be Deleted")
 #     created_item = await repository.create(item)
@@ -94,7 +87,6 @@ async def test_get_all(repository):
 #     assert deleted_item is None
 
 
-# @pytest.mark.asyncio
 # async def test_create_many(repository):
 #     items = [TestSchema(id=1, name=f"Bulk Item {i}") for i in range(3)]
 #     created_items = await repository.create_many(items)
@@ -104,14 +96,12 @@ async def test_get_all(repository):
 #     assert [item.name for item in created_items] == ["Bulk Item 0", "Bulk Item 1", "Bulk Item 2"]
 
 
-# @pytest.mark.asyncio
 # async def test_get_by_id_not_found(repository):
 #     non_existent_id = 9999
 #     result = await repository.get_by_id(non_existent_id)
 #     assert result is None
 
 
-# @pytest.mark.asyncio
 # async def test_update_not_found(repository):
 #     non_existent_id = 9999
 #     update_data = TestSchema(id=1, name="Updated Name")
@@ -120,7 +110,6 @@ async def test_get_all(repository):
 #         await repository.update(non_existent_id, update_data)
 
 
-# @pytest.mark.asyncio
 # async def test_delete_not_found(repository):
 #     non_existent_id = 9999
 
