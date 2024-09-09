@@ -1,4 +1,18 @@
 services:
+  postgres:
+    image: postgres:16
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - path: .env
+        required: true
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE}
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+
   app:
     build:
       context: .
@@ -7,25 +21,12 @@ services:
       - "8000:8000"
     volumes:
       - ./src:/app/src
-    env_file:
-      - path: .env
-        required: true
-    volumes:
       - .env:/app/.env
-    depends_on:
-      - db
-
-  postgres:
-    image: postgres:16
-    volumes:
-      - ./postgres_data:/var/lib/postgresql/data
-
     env_file:
       - path: .env
         required: true
-    environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=fastapi_db
-    ports:
-      - "5432:5432"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:

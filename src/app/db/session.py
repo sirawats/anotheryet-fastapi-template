@@ -5,18 +5,9 @@ from typing import AsyncGenerator
 from app.config import settings
 
 
-# Async engine
 async_url = f"postgresql+asyncpg://{settings.DB_USERNAME}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_DATABASE}"
-async_url_object = URL.create(
-    async_url,
-    username=settings.DB_USERNAME,
-    password=settings.DB_PASSWORD,
-    host=settings.DB_HOST,
-    port=int(settings.DB_PORT),
-    database=settings.DB_DATABASE,
-)
 async_engine = create_async_engine(
-    async_url_object,
+    async_url,
     pool_size=settings.DB_POOL_SIZE,
     max_overflow=settings.DB_MAX_OVERFLOW,
     pool_timeout=settings.DB_POOL_TIMEOUT,

@@ -7,7 +7,6 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from typing import Type, TypeVar, Generic
-from typing import List
 from sqlalchemy.exc import IntegrityError
 
 
@@ -16,7 +15,7 @@ T = TypeVar("T")
 ID = int | str | UUID
 
 
-class IAsyncRepository(ABC):
+class RepositoryAbstract(ABC):
     """
     Abstract base class defining the interface for asynchronous repositories.
     """
@@ -47,15 +46,29 @@ class IAsyncRepository(ABC):
         raise NotImplementedError
 
 
-class GenericAsyncRepository(IAsyncRepository, Generic[T]):
+class BaseRepository(RepositoryAbstract, Generic[T]):
     """
-    Generic implementation of IAsyncRepository for SQLAlchemy ORM models.
+    Base repository class for ORM models, implementing CRUD operations.
 
-    Example use:
-        ```
-        class UserRepository(GenericAsyncRepository[orm.User]):
+    This class serves as a foundation for creating service classes that interact with the database.
+    It provides generic implementations for common database CRUD operations.
+    Usually, methods receive a Pydantic model and return a ORM model.
+
+    Usage:
+        To create a service for a specific model, subclass BaseRepository and specify the ORM model:
+
+        ```python
+        class UserService(BaseRepository[orm.User]):
             pass
         ```
+
+    Type Parameters:
+        T: The SQLAlchemy ORM model type this repository will work with.
+
+
+    Note:
+        This class assumes that the ORM model has an 'id' attribute. If not, some methods may raise
+        an AttributeError.
     """
 
     orm_model: Type[T]
@@ -90,7 +103,7 @@ class GenericAsyncRepository(IAsyncRepository, Generic[T]):
             await self.session.rollback()
             raise
 
-    async def get_all(self, skip: int = 0, limit: int = 100) -> List[T]:
+    async def get_all(self, skip: int = 0, limit: int = 100) -> list[T]:
         """
         Retrieve all items with pagination.
         """
@@ -125,7 +138,7 @@ class GenericAsyncRepository(IAsyncRepository, Generic[T]):
                     raise ValueError(f"{formatted} id does not exist")
             raise
 
-    async def create_many(self, items: List[BaseModel]) -> List[T]:
+    async def create_many(self, items: list[BaseModel]) -> list[T]:
         """
         Create multiple items at once.
         """
