@@ -3,10 +3,9 @@ from contextlib import asynccontextmanager
 import re
 from uuid import UUID
 from asyncpg import ForeignKeyViolationError
-from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from typing import Type, TypeVar, Generic
+from typing import Any, Type, TypeVar, Generic
 from sqlalchemy.exc import IntegrityError
 
 
@@ -58,7 +57,7 @@ class BaseRepository(RepositoryAbstract, Generic[T]):
         To create a service for a specific model, subclass BaseRepository and specify the ORM model:
 
         ```python
-        class UserService(BaseRepository[orm.User]):
+        class UserRepo(BaseRepository[orm.User]):
             pass
         ```
 
@@ -119,16 +118,15 @@ class BaseRepository(RepositoryAbstract, Generic[T]):
         result = await self.session.execute(select(self.orm_model).filter(getattr(self.orm_model, "id") == id))
         return result.scalar_one_or_none()
 
-    async def create(self, item: BaseModel) -> T:
+    async def create(self, item: T, attributes: list[str] = []) -> T:
         """
         Create a new item.
         """
         try:
-            actual_item = self.orm_model(**item.model_dump())
-            self.session.add(actual_item)
+            self.session.add(item)
             await self.session.commit()
-            await self.session.refresh(actual_item)
-            return actual_item
+            await self.session.refresh(item, attributes)
+            return item
         except IntegrityError as alchemy_error:
             await self.session.rollback()
             if isinstance(alchemy_error.orig, ForeignKeyViolationError):
@@ -138,15 +136,14 @@ class BaseRepository(RepositoryAbstract, Generic[T]):
                     raise ValueError(f"{formatted} id does not exist")
             raise
 
-    async def create_many(self, items: list[BaseModel]) -> list[T]:
+    async def create_many(self, items: list[T]) -> list[T]:
         """
         Create multiple items at once.
         """
         try:
-            actual_items = [self.orm_model(**item.model_dump()) for item in items]
-            self.session.add_all(actual_items)
+            self.session.add_all(items)
             await self.session.commit()
-            return actual_items
+            return items
         except IntegrityError as alchemy_error:
             await self.session.rollback()
             if isinstance(alchemy_error.orig, ForeignKeyViolationError):
@@ -156,7 +153,7 @@ class BaseRepository(RepositoryAbstract, Generic[T]):
                     raise ValueError(f"{formatted} id does not exist")
             raise
 
-    async def update(self, id: ID, item: BaseModel) -> T:
+    async def update(self, id: ID, update_data: dict[str, Any], attributes: list[str] = []) -> T:
         """
         Update an existing item.
         """
@@ -164,12 +161,11 @@ class BaseRepository(RepositoryAbstract, Generic[T]):
         if not db_item:
             raise ValueError(f"Item with id {id} not found")
 
-        update_data = item.model_dump(exclude_unset=True)
         for key, value in update_data.items():
             setattr(db_item, key, value)
 
         await self.session.commit()
-        await self.session.refresh(db_item)
+        await self.session.refresh(db_item, attributes)
         return db_item
 
     async def delete(self, id: ID) -> None:

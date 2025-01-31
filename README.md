@@ -53,6 +53,16 @@
   - Containerization solution for consistent environments across development and production
   - Simplifies deployment, scaling, and management of microservices
 
+|- 🔒 **[Bandit](https://bandit.readthedocs.io/)**
+|  - Security-focused static analyzer for finding common vulnerabilities
+|  - Scans for issues like hardcoded passwords, shell injection risks
+|  - Integrates with CI/CD pipelines for automated security checks
+
+- 🔄 **[pre-commit](https://pre-commit.com/)**
+  - Framework for managing and maintaining multi-language pre-commit hooks
+  - Automates code quality checks before commits
+  - Ensures consistent code style across the project
+
 ## Why Choose yet-another-fastapi-template?
 
 This template is perfect for developers who want to start a new FastAPI project with a solid foundation, adhering to modern best practices. It abstracts the boilerplate setup and configuration, allowing you to focus on building features and writing clean, maintainable code. With this template, you'll have:
@@ -85,7 +95,10 @@ uv sync
 cp .env.example .env
 ```
 
-
+#### 3. Set up pre-commit hooks
+```bash
+uv run -- pre-commit install
+```
 
 ## Development
 - Create Alembic Migration
@@ -95,3 +108,7 @@ cp .env.example .env
     ```bash
     uv run -- alembic upgrade head
     ```
+|- Security Scanning with Bandit
+|    ```bash
+|    uv run -- bandit -r src/
+|    ```

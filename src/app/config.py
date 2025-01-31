@@ -12,6 +12,11 @@ class Settings(BaseSettings):
     DB_PORT: str = Field("5432", validate_default=True)
     DB_DATABASE: str = Field(validate_default=True)
 
+    # Redis connection
+    REDIS_HOST: str = Field(validate_default=True)
+    REDIS_PORT: str = Field(validate_default=True)
+    REDIS_POOL_SIZE: int = Field(10)
+
     # Database pool
     DB_POOL_SIZE: int = Field(10)
     DB_MAX_OVERFLOW: int = Field(5)
